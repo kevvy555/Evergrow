@@ -7,23 +7,18 @@ export class GrowthSystem {
     this.mergeSystem = mergeSystem;
   }
 
-  tap(x, y) {
-    this.world.incrementTaps();
+  growAt(x, y) {
     const events = [];
     const occupied = this.world.getCell(x, y);
 
     if (!occupied) {
-      this.world.setCell(x, y, { level: 0 });
-      this.world.addScore(ENTITY_DEFINITIONS[0].score);
-      events.push({ type: 'spawn', x, y, level: 0 });
+      this.#spawnSprout(x, y, events);
     } else {
       const emptyNeighbour = this.#nearestEmptyNeighbour(x, y);
       if (emptyNeighbour) {
-        this.world.setCell(emptyNeighbour.x, emptyNeighbour.y, { level: 0 });
-        this.world.addScore(ENTITY_DEFINITIONS[0].score);
-        events.push({ type: 'spawn', x: emptyNeighbour.x, y: emptyNeighbour.y, level: 0 });
         x = emptyNeighbour.x;
         y = emptyNeighbour.y;
+        this.#spawnSprout(x, y, events);
       } else {
         events.push({ type: 'pulse', x, y, level: occupied.level });
       }
@@ -31,6 +26,12 @@ export class GrowthSystem {
 
     events.push(...this.mergeSystem.resolveFrom(x, y));
     return events;
+  }
+
+  #spawnSprout(x, y, events) {
+    this.world.setCell(x, y, { level: 0 });
+    this.world.addScore(ENTITY_DEFINITIONS[0].score);
+    events.push({ type: 'spawn', x, y, level: 0 });
   }
 
   #nearestEmptyNeighbour(x, y) {
