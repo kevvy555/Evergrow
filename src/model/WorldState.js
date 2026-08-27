@@ -23,6 +23,10 @@ export class WorldState {
     this.perks = [];
     this.pendingEvolutionChoiceId = null;
     this.evolutionChoicesCompleted = [];
+    this.resonancePromotions = 0;
+    this.discoveredWonders = [];
+    this.radiantsCreated = 0;
+    this.radiantsConsumed = 0;
     this.createdAt = Date.now();
     if (snapshot) this.load(snapshot);
   }
@@ -38,10 +42,12 @@ export class WorldState {
   recordPerfectMerge() { this.perfectMerges += 1; }
   hasPerk(id) { return this.perks.includes(id); }
   addPerk(id) { if (!this.hasPerk(id)) this.perks.push(id); }
+  hasWonder(id) { return this.discoveredWonders.includes(id); }
+  discoverWonder(id) { if (!this.hasWonder(id)) this.discoveredWonders.push(id); }
 
   toJSON() {
     return {
-      version: 3,
+      version: 4,
       columns: this.columns,
       rows: this.rows,
       cells: [...this.cells.values()],
@@ -62,6 +68,10 @@ export class WorldState {
       perks: this.perks,
       pendingEvolutionChoiceId: this.pendingEvolutionChoiceId,
       evolutionChoicesCompleted: this.evolutionChoicesCompleted,
+      resonancePromotions: this.resonancePromotions,
+      discoveredWonders: this.discoveredWonders,
+      radiantsCreated: this.radiantsCreated,
+      radiantsConsumed: this.radiantsConsumed,
       createdAt: this.createdAt,
     };
   }
@@ -84,6 +94,10 @@ export class WorldState {
     this.perks = [...(snapshot.perks ?? [])];
     this.pendingEvolutionChoiceId = snapshot.pendingEvolutionChoiceId ?? null;
     this.evolutionChoicesCompleted = [...(snapshot.evolutionChoicesCompleted ?? [])];
+    this.resonancePromotions = snapshot.resonancePromotions ?? 0;
+    this.discoveredWonders = [...(snapshot.discoveredWonders ?? [])];
+    this.radiantsCreated = snapshot.radiantsCreated ?? 0;
+    this.radiantsConsumed = snapshot.radiantsConsumed ?? 0;
     this.createdAt = snapshot.createdAt ?? Date.now();
     this.cells.clear();
     for (const cell of snapshot.cells ?? []) {

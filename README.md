@@ -1,45 +1,38 @@
 # Evergrow
 
-A tiny, tactile world-building game prototype built with PixiJS.
+A phone-first PixiJS world-building merge game built around one interaction: **tap to grow**.
 
-The player has one core action: **tap the world**. Taps create life; placing three matching adjacent objects merges them upward through a simple progression:
+Current version: **0.4.0**
+
+## Core loop
+
+Tap to create life. Connect three matching objects to evolve them:
 
 `Sprout → Tree → Grove → Village → Town → City → Starport`
 
-The prototype is deliberately small so the feel of the core loop can be tested before adding large systems.
+The controls stay simple while the board gains depth through Perfect Merges, Flow streaks, World Bloom, Life Sparks, evolution perks, Resonance cascades, Radiant entities and hidden spatial Wonders.
 
 ## Run locally
 
-Because the game uses ES modules, serve the folder over HTTP rather than opening `index.html` directly.
+No build step or package install is required.
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Then open `http://localhost:8080`.
+Open `http://localhost:8080`.
 
-There is no build step and no dependency installation. PixiJS 8 is loaded from jsDelivr.
+## Test
+
+```bash
+npm test
+```
 
 ## Architecture
 
-- `src/core` — application composition and immutable configuration
-- `src/model` — serializable game state
-- `src/systems` — pure-ish gameplay rules (growth, merging, progression)
-- `src/view` — PixiJS presentation and interaction
-- `src/services` — persistence and external concerns
-- `src/utils` — shared low-level helpers
+Gameplay rules are pure JavaScript systems operating on serializable `WorldState`. PixiJS views consume state and gameplay events but do not own scoring, progression or simulation rules.
 
-The gameplay model does not depend on PixiJS. This keeps rendering replaceable and game rules straightforward to test.
-
-## Current prototype goals
-
-- Understand the game within seconds
-- Make every tap produce visible feedback
-- Create satisfying 3-object merges and chain reactions
-- Reveal progression gradually
-- Autosave locally
-- Work on desktop and touch devices
-
-## Next design milestones
-
-See `docs/ROADMAP.md`.
+See:
+- `docs/ARCHITECTURE.md`
+- `docs/ENGAGEMENT_DESIGN.md`
+- `docs/ROADMAP.md`

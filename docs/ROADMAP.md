@@ -1,54 +1,73 @@
 # Evergrow Roadmap
 
-## Phase 0 — Core feel
+## v0.1 — Core feel
 
 - [x] Tap to create
-- [x] Spatial 3-object merges and recursive chains
-- [x] Responsive phone-first play area
-- [x] Score, population, stage and autosave
-- [x] Sound/haptic feedback and richer effects
-- [x] Near-merge highlighting
+- [x] 3-object spatial merges
+- [x] Recursive chain reactions
+- [x] Seven progression levels
+- [x] Phone-first responsive board
+- [x] Autosave/reset
 
-## Phase 1 — Reward rhythm (v0.2.0–v0.3.0)
+## v0.2 — Immediate reward loop
 
 - [x] Flow streaks
 - [x] Life Sparks
-- [x] Progressive goals
+- [x] Launch objectives
+- [x] Primed-pair hints
 - [x] Discovery rewards
-- [x] Perfect Merges for 4+ connected matches
-- [x] World Bloom meter and temporary empowered growth
-- [x] Milestone evolution choices with permanent perks
-- [x] Discovery Journal and mastery statistics
+- [x] Sound/haptics toggle
+- [x] Richer effects
 
-## Phase 2 — Living world
+## v0.3 — Mastery and rhythm
 
-- [ ] Day/night cycle and ambient motion
-- [ ] Weather that affects presentation without adding controls
-- [ ] Simple inhabitants and traffic around settlements
-- [ ] Positive/negative world conditions that create interesting recovery play
-- [ ] Combination discoveries that emerge from world state
+- [x] Perfect Merges for 4+ clusters
+- [x] World Bloom charge/climax loop
+- [x] Permanent evolution choices
+- [x] Discovery Journal
+- [x] Mastery goals
 
-## Phase 3 — Retention without chores
+## v0.4 — Emergent world reactions
 
-- [ ] Daily shared challenge world
-- [ ] Rare deterministic world traits
-- [ ] Gentle offline progression
-- [ ] One-tap friend gifts
-- [ ] Shareable world summary cards
+- [x] Resonance promotes Perfect Merge overflow
+- [x] Resonance-generated secondary cascades
+- [x] Mastery-earned Radiant entities
+- [x] Radiant merge bursts
+- [x] Six hidden spatial Wonders
+- [x] Wonder collection in Journal
+- [x] Living motes around settlements
+- [x] Re-tuned Bloom pacing after simulation
+- [x] Responsive Journal/evolution layouts in landscape
 
-## Phase 4 — Scale reveal
+## Next: v0.5 — Living world
 
-- [ ] Planet completion and camera pull-back
-- [ ] Multiple autonomous planets
-- [ ] Solar-system layer
-- [ ] Preserve the same tap-first interaction language
+Highest-value candidates:
+- Weather/day-night state that changes presentation and creates simple temporary board opportunities.
+- Tiny inhabitants/traffic that make settlements feel owned and alive without becoming units to manage.
+- A small set of positive/negative world conditions that create solvable spatial problems, never destructive game-over punishment.
+- More hidden multi-piece Wonders after playtesting proves the recipe-discovery loop is understandable.
+
+## Later: retention without chores
+
+- Daily shared seed/challenge world.
+- Rare world traits at generation.
+- Gentle offline world animation/progression.
+- One-tap friend gifts and cooperative global discoveries.
+
+## Scale reveal
+
+- Planet completion and camera pull-back.
+- Multiple autonomous planets.
+- Solar-system layer.
+- Preserve the same tap-first interaction language.
 
 ## Design rules
 
 1. A new player must understand the primary action without a tutorial.
-2. New systems may deepen consequences, but should rarely add controls.
-3. Failure creates a problem to solve rather than destroying progress.
-4. The player should see a satisfying response within 250 ms of every tap.
-5. Complexity belongs in simulation, mastery and emergence—not menu management.
-6. Reward skill and curiosity before raw time spent.
-7. Avoid manipulative timers, forced ads, loss aversion and punishment loops.
+2. New systems deepen consequences, not controls.
+3. Failure creates a problem to solve rather than deleting progress.
+4. Every tap should produce a satisfying response within roughly 250 ms.
+5. Complexity belongs in simulation and emergence, not menus.
+6. Mastery rewards should alter the board, not only increase numbers.
+7. Special states must remain special; tune their frequency rather than stacking permanent bonuses.
+8. Never add a system merely because other free-to-play games use it.

@@ -1,14 +1,27 @@
 export const GAME_CONFIG = Object.freeze({
   title: 'Evergrow',
-  version: '0.3.0',
+  version: '0.4.0',
   grid: Object.freeze({ columns: 9, rows: 18 }),
   saveKey: 'evergrow.save.v1',
   mergeCount: 3,
   maxLevel: 6,
   autosaveMs: 1500,
   spark: Object.freeze({ firstAt: 9, interval: 12, score: 30, spawnLevel: 1 }),
-  bloom: Object.freeze({ threshold: 100, turns: 6, spawnLevel: 1, mergeBaseEnergy: 12, mergeLevelEnergy: 5, perfectEnergy: 18, sparkEnergy: 20 }),
+  bloom: Object.freeze({
+    threshold: 150,
+    turns: 5,
+    spawnLevel: 1,
+    mergeBaseEnergy: 12,
+    mergeLevelEnergy: 5,
+    perfectEnergy: 18,
+    sparkEnergy: 20,
+    resonanceEnergy: 7,
+    radiantEnergy: 25,
+  }),
   perfect: Object.freeze({ minCluster: 4, baseBonus: 20, levelBonus: 12 }),
+  resonance: Object.freeze({ maxPromotionsPerTurn: 5 }),
+  radiant: Object.freeze({ everyPerfectMerges: 2, mergeBonusBase: 60, mergeBonusPerLevel: 25 }),
+  wonders: Object.freeze({ maxDiscoveriesPerTurn: 1 }),
 });
 
 export const ENTITY_DEFINITIONS = Object.freeze([

@@ -2,7 +2,12 @@ import { GAME_CONFIG } from '../core/config.js';
 
 export class BloomSystem {
   constructor(world, perkSystem) { this.world = world; this.perkSystem = perkSystem; }
-  prepareTurn() { return { wasActive: this.world.bloomTurns > 0, spawnLevel: this.world.bloomTurns > 0 ? GAME_CONFIG.bloom.spawnLevel : 0 }; }
+  prepareTurn() {
+    return {
+      wasActive: this.world.bloomTurns > 0,
+      spawnLevel: this.world.bloomTurns > 0 ? GAME_CONFIG.bloom.spawnLevel : 0,
+    };
+  }
 
   apply(events, wasActive) {
     let gain = 0;
@@ -10,6 +15,9 @@ export class BloomSystem {
       if (event.type === 'merge') gain += GAME_CONFIG.bloom.mergeBaseEnergy + event.toLevel * GAME_CONFIG.bloom.mergeLevelEnergy;
       if (event.type === 'perfectMerge') gain += Math.round(GAME_CONFIG.bloom.perfectEnergy * this.perkSystem.perfectBloomMultiplier);
       if (event.type === 'sparkCollected') gain += GAME_CONFIG.bloom.sparkEnergy;
+      if (event.type === 'resonance') gain += GAME_CONFIG.bloom.resonanceEnergy;
+      if (event.type === 'radiantMerge') gain += event.bloomEnergy ?? 0;
+      if (event.type === 'wonderDiscovered') gain += event.bloomEnergy ?? 0;
     }
 
     if (wasActive) {
