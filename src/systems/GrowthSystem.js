@@ -2,23 +2,27 @@ import { ENTITY_DEFINITIONS } from '../core/config.js';
 import { allNeighbours } from '../utils/grid.js';
 
 export class GrowthSystem {
-  constructor(world, mergeSystem) { this.world = world; this.mergeSystem = mergeSystem; }
+  constructor(world, mergeSystem, weatherSystem = null) {
+    this.world = world;
+    this.mergeSystem = mergeSystem;
+    this.weatherSystem = weatherSystem;
+  }
 
   growAt(x, y, { spawnLevel = 0 } = {}) {
     const events = [];
     const occupied = this.world.getCell(x, y);
-    if (!occupied) {
-      this.#spawn(x, y, spawnLevel, events);
-    } else {
+    if (occupied) {
       const emptyNeighbour = this.#nearestEmptyNeighbour(x, y);
-      if (emptyNeighbour) {
-        x = emptyNeighbour.x;
-        y = emptyNeighbour.y;
-        this.#spawn(x, y, spawnLevel, events);
-      } else {
+      if (!emptyNeighbour) {
         events.push({ type: 'pulse', x, y, level: occupied.level });
+        return events;
       }
+      x = emptyNeighbour.x;
+      y = emptyNeighbour.y;
     }
+
+    const adjustedLevel = this.weatherSystem?.adjustSpawnLevel(x, y, spawnLevel) ?? spawnLevel;
+    this.#spawn(x, y, adjustedLevel, events);
     events.push(...this.mergeSystem.resolveFrom(x, y));
     return events;
   }

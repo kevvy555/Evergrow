@@ -36,23 +36,42 @@
 - [x] Six hidden spatial Wonders
 - [x] Wonder collection in Journal
 - [x] Living motes around settlements
-- [x] Re-tuned Bloom pacing after simulation
-- [x] Responsive Journal/evolution layouts in landscape
+- [x] Re-tuned Bloom pacing
 
-## Next: v0.5 — Living world
+## v0.5 — Living world and attachment
+
+- [x] Dawn/day/dusk/night presentation cycle
+- [x] Deterministic Rain, Golden Hour and Starlight weather
+- [x] Weather-specific board opportunities
+- [x] Persistent settlement names
+- [x] Settlement names survive evolution
+- [x] Contextual settlement wishes
+- [x] Community Joy
+- [x] Short Festivals after repeated fulfilled wishes
+- [x] Harmony districts from nature + settlements
+- [x] Harmony identity survives settlement evolution
+- [x] Roads and moving traffic between settlements
+- [x] Festival/weather/Harmony visual and audio feedback
+- [x] Journal expanded with living-world history
+- [x] v4 → v5 backward-compatible save defaults
+- [x] Synthetic pacing sanity check
+
+## Next: v0.6 — Meaningful world conditions
 
 Highest-value candidates:
-- Weather/day-night state that changes presentation and creates simple temporary board opportunities.
-- Tiny inhabitants/traffic that make settlements feel owned and alive without becoming units to manage.
-- A small set of positive/negative world conditions that create solvable spatial problems, never destructive game-over punishment.
-- More hidden multi-piece Wonders after playtesting proves the recipe-discovery loop is understandable.
+- Temporary positive/negative conditions that create solvable spatial puzzles, never destructive game-over punishment.
+- A small “world mood” model driven by settlement/nature balance rather than another currency.
+- Named landmark memories for especially large chains, Wonders or Radiant events.
+- More interaction between weather, Wonders and evolution perks after real playtesting.
+- Better onboarding through environmental affordances rather than tutorial text.
 
 ## Later: retention without chores
 
-- Daily shared seed/challenge world.
-- Rare world traits at generation.
-- Gentle offline world animation/progression.
+- Daily shared deterministic seed/challenge world.
+- Rare world-generation traits.
+- Gentle offline animation/progression.
 - One-tap friend gifts and cooperative global discoveries.
+- Shareable world summary cards.
 
 ## Scale reveal
 
@@ -69,5 +88,6 @@ Highest-value candidates:
 4. Every tap should produce a satisfying response within roughly 250 ms.
 5. Complexity belongs in simulation and emergence, not menus.
 6. Mastery rewards should alter the board, not only increase numbers.
-7. Special states must remain special; tune their frequency rather than stacking permanent bonuses.
-8. Never add a system merely because other free-to-play games use it.
+7. Persistent identity should make the player care about this run specifically.
+8. Special states must remain special; tune frequency rather than stacking permanent boosts.
+9. Never add a system merely because other free-to-play games use it.

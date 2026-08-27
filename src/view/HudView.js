@@ -1,12 +1,15 @@
 import { Container, Graphics, Text, TextStyle } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.mjs';
 import { ENTITY_DEFINITIONS, GAME_CONFIG } from '../core/config.js';
+import { getDayPhase } from '../core/weatherDefinitions.js';
 
 export class HudView extends Container {
-  constructor(world, progression, goalSystem, actions) {
+  constructor(world, progression, goalSystem, wishSystem, weatherSystem, actions) {
     super();
     this.world = world;
     this.progression = progression;
     this.goalSystem = goalSystem;
+    this.wishSystem = wishSystem;
+    this.weatherSystem = weatherSystem;
     this.actions = actions;
     this.bloomGeometry = { x: 16, y: 85, width: 100, height: 5 };
 
@@ -19,7 +22,7 @@ export class HudView extends Container {
     this.flow = this.#text('', 11, 800, 0xffcf66);
     this.score = this.#text('', 12, 800);
     this.population = this.#text('', 11, 650);
-    this.goal = this.#text('', 11, 650, 0xdbeafe);
+    this.context = this.#text('', 11, 650, 0xdbeafe);
     this.bloomLabel = this.#text('', 9, 800, 0xf3b6ff);
     this.journal = this.#makeButton('📖', () => this.actions.openJournal(), 30);
     this.feedback = this.#makeButton('🔊', () => { this.actions.toggleFeedback(); this.render(); }, 30);
@@ -39,7 +42,7 @@ export class HudView extends Container {
       this.flow,
       this.score,
       this.population,
-      this.goal,
+      this.context,
       this.bloomLabel,
       this.journal,
       this.feedback,
@@ -71,7 +74,7 @@ export class HudView extends Container {
     this.flow.position.set(width * 0.42, 41);
     this.score.position.set(width * 0.66, 41);
     this.population.position.set(width - 16, 41);
-    this.goal.position.set(16, 64);
+    this.context.position.set(16, 64);
     this.bloomLabel.position.set(width - 16, 65);
 
     this.bloomGeometry = { x: 16, y: 85, width: Math.max(20, width - 32), height: 5 };
@@ -86,14 +89,26 @@ export class HudView extends Container {
   render() {
     const current = ENTITY_DEFINITIONS[this.world.discoveredLevel];
     const goal = this.goalSystem.getCurrentGoal();
-    this.stage.text = `${current?.emoji ?? '🌱'} ${this.progression.getCurrentStage()} · chain ${this.world.bestChain}×`;
+    const wish = this.wishSystem.getCurrentWish();
+    const weather = this.weatherSystem.active;
+    const day = getDayPhase(this.world.taps, GAME_CONFIG.dayCycle.phaseLength);
+
+    const environment = weather ? `${day.icon} ${weather.icon}${this.world.weatherTurns}` : day.icon;
+    this.stage.text = `${current?.emoji ?? '🌱'} ${this.progression.getCurrentStage()} · ${environment}`;
     this.flow.text = this.world.flow > 0 ? `🔥 ${this.world.flow}× FLOW` : '🔥 —';
     this.score.text = `✨ ${this.world.score.toLocaleString()}`;
     this.population.text = `👥 ${this.progression.getPopulation().toLocaleString()}`;
-    this.goal.text = goal ? `🎯 ${goal.label}` : '🎯 Launch goals complete';
-    this.bloomLabel.text = this.world.bloomTurns > 0
-      ? `🌸 BLOOM ${this.world.bloomTurns}`
+    this.context.text = wish
+      ? `💬 ${wish.settlementName ? `${wish.settlementName}: ` : ''}${wish.icon} ${wish.label}`
+      : goal ? `🎯 ${goal.label}` : '🎯 Launch goals complete';
+
+    const bloom = this.world.bloomTurns > 0
+      ? `🌸 ${this.world.bloomTurns}`
       : `🌸 ${Math.floor((this.world.bloomEnergy / GAME_CONFIG.bloom.threshold) * 100)}%`;
+    const community = this.world.festivalTurns > 0
+      ? `🎉 ${this.world.festivalTurns}`
+      : this.world.discoveredLevel >= 3 ? `😊 ${this.world.communityJoy}/${GAME_CONFIG.wishes.festivalEvery}` : '';
+    this.bloomLabel.text = community ? `${community}  ${bloom}` : bloom;
     this.feedback.setLabel(this.actions.feedbackEnabled() ? '🔊' : '🔇');
 
     const progress = this.world.bloomTurns > 0 ? 1 : this.world.bloomEnergy / GAME_CONFIG.bloom.threshold;

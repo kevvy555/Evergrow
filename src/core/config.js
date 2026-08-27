@@ -1,11 +1,12 @@
 export const GAME_CONFIG = Object.freeze({
   title: 'Evergrow',
-  version: '0.4.0',
+  version: '0.5.0',
   grid: Object.freeze({ columns: 9, rows: 18 }),
   saveKey: 'evergrow.save.v1',
   mergeCount: 3,
   maxLevel: 6,
   autosaveMs: 1500,
+  dayCycle: Object.freeze({ phaseLength: 7 }),
   spark: Object.freeze({ firstAt: 9, interval: 12, score: 30, spawnLevel: 1 }),
   bloom: Object.freeze({
     threshold: 150,
@@ -17,11 +18,19 @@ export const GAME_CONFIG = Object.freeze({
     sparkEnergy: 20,
     resonanceEnergy: 7,
     radiantEnergy: 25,
+    wonderEnergy: 12,
+    harmonyEnergy: 16,
+    wishEnergy: 18,
+    festivalEnergy: 5,
   }),
   perfect: Object.freeze({ minCluster: 4, baseBonus: 20, levelBonus: 12 }),
   resonance: Object.freeze({ maxPromotionsPerTurn: 5 }),
   radiant: Object.freeze({ everyPerfectMerges: 2, mergeBonusBase: 60, mergeBonusPerLevel: 25 }),
   wonders: Object.freeze({ maxDiscoveriesPerTurn: 1 }),
+  weather: Object.freeze({ firstAt: 20, clearTurns: 10, goldenMergeMultiplier: 0.5 }),
+  wishes: Object.freeze({ firstAt: 12, interval: 7, settlementMinLevel: 3, festivalEvery: 2 }),
+  harmony: Object.freeze({ baseReward: 140, levelReward: 70 }),
+  festival: Object.freeze({ turns: 4, mergeBonus: 35 }),
 });
 
 export const ENTITY_DEFINITIONS = Object.freeze([

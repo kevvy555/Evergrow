@@ -26,7 +26,15 @@ export class MergeSystem {
       const nextLevel = source.level + 1;
       const wasNewDiscovery = nextLevel > this.world.discoveredLevel;
       const definition = ENTITY_DEFINITIONS[nextLevel];
-      this.world.setCell(cursor.x, cursor.y, { level: nextLevel });
+      const inheritsHarmony = nextLevel >= GAME_CONFIG.wishes.settlementMinLevel
+        && consumedEntities.some((entity) => entity.harmony);
+      const inheritedName = nextLevel >= GAME_CONFIG.wishes.settlementMinLevel
+        ? consumedEntities.find((entity) => entity.settlementName)?.settlementName ?? null
+        : null;
+      const evolved = { level: nextLevel };
+      if (inheritsHarmony) evolved.harmony = true;
+      if (inheritedName) evolved.settlementName = inheritedName;
+      this.world.setCell(cursor.x, cursor.y, evolved);
       this.world.discover(nextLevel);
       this.world.addScore(definition.score);
       chain += 1;
@@ -41,6 +49,10 @@ export class MergeSystem {
         chain,
         clusterSize: cluster.length,
       });
+
+      if (inheritsHarmony) {
+        events.push({ type: 'harmonyInherited', x: cursor.x, y: cursor.y, level: nextLevel });
+      }
 
       if (cluster.length >= GAME_CONFIG.perfect.minCluster) {
         const bonus = Math.round(

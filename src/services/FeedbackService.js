@@ -4,25 +4,29 @@ export class FeedbackService {
 
   handle(events) {
     if (!this.enabled || events.length === 0) return;
-    const wonder = events.find((event) => event.type === 'wonderDiscovered');
-    const radiantBorn = events.find((event) => event.type === 'radiantBorn');
-    const radiantMerge = events.find((event) => event.type === 'radiantMerge');
     const evolution = events.find((event) => event.type === 'evolutionChosen');
+    const wonder = events.find((event) => event.type === 'wonderDiscovered');
+    const festival = events.find((event) => event.type === 'festivalStart');
+    const harmony = events.find((event) => event.type === 'harmonyFormed');
+    const wish = events.find((event) => event.type === 'wishComplete');
+    const weather = events.find((event) => event.type === 'weatherStart');
     const bloom = events.find((event) => event.type === 'bloomStart');
+    const radiant = events.find((event) => event.type === 'radiantBorn');
     const perfect = events.find((event) => event.type === 'perfectMerge');
-    const resonance = events.find((event) => event.type === 'resonance');
     const discovery = events.find((event) => event.type === 'discovery');
     const goal = events.find((event) => event.type === 'goalComplete');
     const spark = events.find((event) => event.type === 'sparkCollected');
     const merges = events.filter((event) => event.type === 'merge');
 
-    if (wonder) { this.#tones([294, 440, 587, 740], 0.07); this.#vibrate([18, 18, 30, 18, 42]); }
-    else if (radiantBorn) { this.#tones([659, 831, 988], 0.06); this.#vibrate([10, 12, 28]); }
-    else if (radiantMerge) { this.#tones([392, 659, 988], 0.065); this.#vibrate([14, 16, 34]); }
-    else if (evolution) { this.#tones([330, 440, 554, 659], 0.065); this.#vibrate([18, 20, 28, 24, 36]); }
+    if (evolution) { this.#tones([330, 440, 554, 659], 0.065); this.#vibrate([18, 20, 28, 24, 36]); }
+    else if (wonder) { this.#tones([392, 587, 740, 880], 0.06); this.#vibrate([14, 16, 22, 18, 30]); }
+    else if (festival) { this.#tones([392, 494, 587, 784], 0.06); this.#vibrate([12, 14, 18, 14, 26]); }
+    else if (harmony) { this.#tones([349, 440, 523], 0.055); this.#vibrate([10, 16, 24]); }
+    else if (wish) { this.#tones([440, 554, 659], 0.055); this.#vibrate([10, 14, 20]); }
+    else if (weather) { this.#tones(this.#weatherTones(weather.weatherId), 0.035); this.#vibrate(10); }
     else if (bloom) { this.#tones([261, 392, 523, 659], 0.06); this.#vibrate([20, 24, 45]); }
+    else if (radiant) { this.#tones([523, 659, 784], 0.06); this.#vibrate([12, 18, 30]); }
     else if (perfect) { this.#tones([523, 659, 784], 0.06); this.#vibrate([12, 18, 30]); }
-    else if (resonance) { this.#tones([440, 587], 0.045); this.#vibrate(16); }
     else if (discovery) { this.#tones([392, 523, 659], 0.075); this.#vibrate([18, 30, 30]); }
     else if (goal) { this.#tones([440, 554, 659], 0.065); this.#vibrate([12, 22, 20]); }
     else if (spark) { this.#tones([659, 784], 0.055); this.#vibrate(22); }
@@ -31,6 +35,12 @@ export class FeedbackService {
       this.#tone(300 + chain * 90, 0.045, 0.04);
       this.#vibrate(Math.min(24, 8 + chain * 4));
     } else if (events.some((event) => event.type === 'spawn')) this.#tone(210, 0.018, 0.025);
+  }
+
+  #weatherTones(id) {
+    if (id === 'rain') return [294, 349];
+    if (id === 'golden_hour') return [440, 554, 659];
+    return [523, 698, 880];
   }
 
   #getAudioContext() {

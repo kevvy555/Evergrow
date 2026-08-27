@@ -5,7 +5,7 @@ export class MutationSystem {
 
   apply(events) {
     const targetCreated = Math.floor(this.world.perfectMerges / GAME_CONFIG.radiant.everyPerfectMerges);
-    let due = targetCreated > this.world.radiantsCreated ? 1 : 0;
+    let due = targetCreated > this.world.masteryRadiantsCreated ? 1 : 0;
     if (due === 0 || !events.some((event) => event.type === 'perfectMerge')) return events;
 
     const candidates = this.#candidateCells(events);
@@ -15,8 +15,9 @@ export class MutationSystem {
       if (!entity || entity.variant === 'radiant') continue;
       this.world.setCell(candidate.x, candidate.y, { ...entity, variant: 'radiant' });
       this.world.radiantsCreated += 1;
+      this.world.masteryRadiantsCreated += 1;
       due -= 1;
-      events.push({ type: 'radiantBorn', x: candidate.x, y: candidate.y, level: entity.level });
+      events.push({ type: 'radiantBorn', x: candidate.x, y: candidate.y, level: entity.level, source: 'mastery' });
     }
     return events;
   }

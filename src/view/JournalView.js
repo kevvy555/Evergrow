@@ -56,7 +56,7 @@ export class JournalView extends Container {
     const wonderHeaderY = discoveryStart + ENTITY_DEFINITIONS.length * 30 + 5;
     this.#sectionLabel('HIDDEN WONDERS', x + 20, wonderHeaderY, 0xd4b6ff);
     this.#renderWonders(x + 20, wonderHeaderY + 18, panelWidth - 40, 27);
-    this.#renderStats(x + 20, y + panelHeight - 55);
+    this.#renderStats(x + 20, y + panelHeight - 88);
   }
 
   #renderLandscape(x, y, panelWidth, panelHeight) {
@@ -73,7 +73,7 @@ export class JournalView extends Container {
     this.#sectionLabel('HIDDEN WONDERS', rightX, top, 0xd4b6ff);
     const wonderRow = Math.max(25, Math.min(31, (panelHeight - 145) / WONDER_DEFINITIONS.length));
     this.#renderWonders(rightX, top + 17, columnWidth, wonderRow);
-    this.#renderStats(rightX, y + panelHeight - 57);
+    this.#renderStats(rightX, y + panelHeight - 88);
   }
 
   #renderDiscoveries(x, startY, width, rowHeight) {
@@ -105,8 +105,14 @@ export class JournalView extends Container {
 
   #renderStats(x, y) {
     const perks = this.world.perks.length > 0 ? this.world.perks.map((perk) => perk.replaceAll('_', ' ')).join(' · ') : 'none yet';
+    const places = [...this.world.cells.values()]
+      .filter((entity) => entity.level >= 3 && entity.settlementName)
+      .sort((a, b) => (b.level - a.level) || (a.y - b.y) || (a.x - b.x))
+      .slice(0, 2)
+      .map((entity) => entity.settlementName)
+      .join(' · ');
     const stats = this.#text(
-      `💎 ${this.world.perfectMerges}   ⚡ ${this.world.resonancePromotions}   ✦ ${this.world.radiantsCreated}   🌸 ${this.world.bloomsTriggered}\n🧬 ${perks}`,
+      `🏡 ${places || 'No named settlements yet'}\n♥ ${this.world.harmonyDistricts}   😊 ${this.world.wishesCompleted}   🎉 ${this.world.festivalsTriggered}   🌦 ${this.world.weatherEventsExperienced}\n💎 ${this.world.perfectMerges}   ⚡ ${this.world.resonancePromotions}   ✦ ${this.world.radiantsCreated}   🌸 ${this.world.bloomsTriggered}\n🧬 ${perks}`,
       9,
       700,
       0xdbeafe,

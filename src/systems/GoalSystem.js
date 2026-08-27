@@ -19,6 +19,10 @@ export class GoalSystem {
       case 'bestChain': return this.world.bestChain >= goal.target;
       case 'perfectMerges': return this.world.perfectMerges >= goal.target;
       case 'blooms': return this.world.bloomsTriggered >= goal.target;
+      case 'harmonyDistricts': return this.world.harmonyDistricts >= goal.target;
+      case 'wishes': return this.world.wishesCompleted >= goal.target;
+      case 'festivals': return this.world.festivalsTriggered >= goal.target;
+      case 'weatherEvents': return this.world.weatherEventsExperienced >= goal.target;
       default: return false;
     }
   }

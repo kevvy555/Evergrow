@@ -26,7 +26,24 @@ export class WorldState {
     this.resonancePromotions = 0;
     this.discoveredWonders = [];
     this.radiantsCreated = 0;
+    this.masteryRadiantsCreated = 0;
     this.radiantsConsumed = 0;
+
+    this.weatherId = null;
+    this.weatherTurns = 0;
+    this.weatherIndex = 0;
+    this.nextWeatherAt = GAME_CONFIG.weather.firstAt;
+    this.weatherEventsExperienced = 0;
+
+    this.activeWish = null;
+    this.nextWishAt = GAME_CONFIG.wishes.firstAt;
+    this.wishesCompleted = 0;
+    this.communityJoy = 0;
+    this.festivalTurns = 0;
+    this.festivalsTriggered = 0;
+    this.harmonyDistricts = 0;
+    this.settlementNameIndex = 0;
+
     this.createdAt = Date.now();
     if (snapshot) this.load(snapshot);
   }
@@ -47,7 +64,7 @@ export class WorldState {
 
   toJSON() {
     return {
-      version: 4,
+      version: 5,
       columns: this.columns,
       rows: this.rows,
       cells: [...this.cells.values()],
@@ -71,7 +88,21 @@ export class WorldState {
       resonancePromotions: this.resonancePromotions,
       discoveredWonders: this.discoveredWonders,
       radiantsCreated: this.radiantsCreated,
+      masteryRadiantsCreated: this.masteryRadiantsCreated,
       radiantsConsumed: this.radiantsConsumed,
+      weatherId: this.weatherId,
+      weatherTurns: this.weatherTurns,
+      weatherIndex: this.weatherIndex,
+      nextWeatherAt: this.nextWeatherAt,
+      weatherEventsExperienced: this.weatherEventsExperienced,
+      activeWish: this.activeWish,
+      nextWishAt: this.nextWishAt,
+      wishesCompleted: this.wishesCompleted,
+      communityJoy: this.communityJoy,
+      festivalTurns: this.festivalTurns,
+      festivalsTriggered: this.festivalsTriggered,
+      harmonyDistricts: this.harmonyDistricts,
+      settlementNameIndex: this.settlementNameIndex,
       createdAt: this.createdAt,
     };
   }
@@ -97,7 +128,25 @@ export class WorldState {
     this.resonancePromotions = snapshot.resonancePromotions ?? 0;
     this.discoveredWonders = [...(snapshot.discoveredWonders ?? [])];
     this.radiantsCreated = snapshot.radiantsCreated ?? 0;
+    this.masteryRadiantsCreated = snapshot.masteryRadiantsCreated
+      ?? Math.min(this.radiantsCreated, Math.floor(this.perfectMerges / GAME_CONFIG.radiant.everyPerfectMerges));
     this.radiantsConsumed = snapshot.radiantsConsumed ?? 0;
+
+    this.weatherId = snapshot.weatherId ?? null;
+    this.weatherTurns = snapshot.weatherTurns ?? 0;
+    this.weatherIndex = snapshot.weatherIndex ?? 0;
+    this.nextWeatherAt = snapshot.nextWeatherAt ?? Math.max(GAME_CONFIG.weather.firstAt, this.taps + 5);
+    this.weatherEventsExperienced = snapshot.weatherEventsExperienced ?? 0;
+
+    this.activeWish = snapshot.activeWish ? { ...snapshot.activeWish } : null;
+    this.nextWishAt = snapshot.nextWishAt ?? Math.max(GAME_CONFIG.wishes.firstAt, this.taps + 3);
+    this.wishesCompleted = snapshot.wishesCompleted ?? 0;
+    this.communityJoy = snapshot.communityJoy ?? 0;
+    this.festivalTurns = snapshot.festivalTurns ?? 0;
+    this.festivalsTriggered = snapshot.festivalsTriggered ?? 0;
+    this.harmonyDistricts = snapshot.harmonyDistricts ?? 0;
+    this.settlementNameIndex = snapshot.settlementNameIndex ?? 0;
+
     this.createdAt = snapshot.createdAt ?? Date.now();
     this.cells.clear();
     for (const cell of snapshot.cells ?? []) {

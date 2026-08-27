@@ -16,8 +16,7 @@ export class BloomSystem {
       if (event.type === 'perfectMerge') gain += Math.round(GAME_CONFIG.bloom.perfectEnergy * this.perkSystem.perfectBloomMultiplier);
       if (event.type === 'sparkCollected') gain += GAME_CONFIG.bloom.sparkEnergy;
       if (event.type === 'resonance') gain += GAME_CONFIG.bloom.resonanceEnergy;
-      if (event.type === 'radiantMerge') gain += event.bloomEnergy ?? 0;
-      if (event.type === 'wonderDiscovered') gain += event.bloomEnergy ?? 0;
+      if (['radiantMerge', 'wonderDiscovered', 'harmonyFormed', 'wishComplete', 'festivalBonus'].includes(event.type)) gain += event.bloomEnergy ?? 0;
     }
 
     if (wasActive) {

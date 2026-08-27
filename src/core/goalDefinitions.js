@@ -10,4 +10,8 @@ export const GOAL_DEFINITIONS = Object.freeze([
   { id: 'town', label: 'Grow a Town', type: 'discovery', target: 4, reward: 1800 },
   { id: 'city', label: 'Build a City', type: 'discovery', target: 5, reward: 6000 },
   { id: 'starport', label: 'Reach the stars', type: 'discovery', target: 6, reward: 18000 },
+  { id: 'harmony', label: 'Create a Harmony district', type: 'harmonyDistricts', target: 1, reward: 900 },
+  { id: 'wishes', label: 'Complete 3 settlement wishes', type: 'wishes', target: 3, reward: 1200 },
+  { id: 'festival', label: 'Celebrate a Festival', type: 'festivals', target: 1, reward: 1500 },
+  { id: 'weather', label: 'Experience all 3 weather moods', type: 'weatherEvents', target: 3, reward: 1800 },
 ]);
