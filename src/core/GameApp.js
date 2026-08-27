@@ -66,7 +66,7 @@ export class GameApp {
   #layout() {
     const width = this.pixi.renderer.width / this.pixi.renderer.resolution;
     const height = this.pixi.renderer.height / this.pixi.renderer.resolution;
-    this.hud.resize(width);
-    this.worldView.resize(width, height, 165);
+    const hudHeight = this.hud.resize(width, height);
+    this.worldView.resize(width, height, hudHeight);
   }
 }
