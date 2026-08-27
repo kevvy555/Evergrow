@@ -1,7 +1,7 @@
 export const GAME_CONFIG = Object.freeze({
   title: 'Evergrow',
-  version: '0.1.0',
-  grid: Object.freeze({ columns: 9, rows: 16 }),
+  version: '0.1.2',
+  grid: Object.freeze({ columns: 9, rows: 18 }),
   saveKey: 'evergrow.save.v1',
   mergeCount: 3,
   maxLevel: 6,

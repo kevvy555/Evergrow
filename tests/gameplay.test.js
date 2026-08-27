@@ -58,8 +58,8 @@ test('world state round-trips through JSON', () => {
   assert.equal(restored.taps, 9);
 });
 
-test('new worlds use the expanded 9x16 play area', () => {
+test('new worlds use the expanded 9x18 play area', () => {
   const { world } = createGame();
   assert.equal(world.columns, 9);
-  assert.equal(world.rows, 16);
+  assert.equal(world.rows, 18);
 });

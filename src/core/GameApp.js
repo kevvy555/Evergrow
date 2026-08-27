@@ -64,8 +64,9 @@ export class GameApp {
   }
 
   #layout() {
-    const width = this.pixi.renderer.width / this.pixi.renderer.resolution;
-    const height = this.pixi.renderer.height / this.pixi.renderer.resolution;
+    // renderer.screen is already expressed in logical CSS pixels. Dividing the
+    // renderer dimensions by resolution again shrinks the game on high-DPI devices.
+    const { width, height } = this.pixi.renderer.screen;
     const hudHeight = this.hud.resize(width, height);
     this.worldView.resize(width, height, hudHeight);
   }
