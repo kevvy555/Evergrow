@@ -11,24 +11,29 @@ export class WorldView extends Container {
     this.board = new Container();
     this.effects = new Container();
     this.addChild(this.board, this.effects);
-    this.layout = { cellSize: 44, originX: 0, originY: 0 };
+    this.layout = { cellSize: 44, originX: 0, originY: 0, transpose: false };
     this.entityViews = new Map();
   }
 
-  resize(width, height, hudHeight = 150) {
-    const availableWidth = width - 24;
-    const availableHeight = height - hudHeight - 36;
-    const cellSize = Math.floor(Math.min(
-      availableWidth / this.world.columns,
-      availableHeight / this.world.rows,
-      72,
-    ));
-    const boardWidth = cellSize * this.world.columns;
-    const boardHeight = cellSize * this.world.rows;
+  resize(width, height, hudHeight = 96) {
+    const margin = 10;
+    const availableWidth = Math.max(1, width - margin * 2);
+    const availableHeight = Math.max(1, height - hudHeight - margin);
+    const transpose = width > height;
+    const visualColumns = transpose ? this.world.rows : this.world.columns;
+    const visualRows = transpose ? this.world.columns : this.world.rows;
+    const cellSize = Math.max(12, Math.floor(Math.min(
+      availableWidth / visualColumns,
+      availableHeight / visualRows,
+    )));
+    const boardWidth = cellSize * visualColumns;
+    const boardHeight = cellSize * visualRows;
+
     this.layout = {
       cellSize,
       originX: Math.floor((width - boardWidth) / 2),
       originY: Math.floor(hudHeight + (availableHeight - boardHeight) / 2),
+      transpose,
     };
     this.renderWorld();
   }
@@ -37,17 +42,18 @@ export class WorldView extends Container {
     this.board.removeChildren().forEach((child) => child.destroy({ children: true }));
     this.entityViews.clear();
 
-    const { cellSize, originX, originY } = this.layout;
+    const { cellSize, originX, originY, transpose } = this.layout;
+    const visualColumns = transpose ? this.world.rows : this.world.columns;
+    const visualRows = transpose ? this.world.columns : this.world.rows;
     const backdrop = new Graphics()
-      .roundRect(originX - 8, originY - 8, cellSize * this.world.columns + 16, cellSize * this.world.rows + 16, 30)
+      .roundRect(originX - 5, originY - 5, cellSize * visualColumns + 10, cellSize * visualRows + 10, 24)
       .fill({ color: 0x10243f, alpha: 0.92 })
       .stroke({ color: 0x5ea6d8, alpha: 0.18, width: 1 });
     this.board.addChild(backdrop);
 
     for (let y = 0; y < this.world.rows; y += 1) {
       for (let x = 0; x < this.world.columns; x += 1) {
-        const px = originX + x * cellSize;
-        const py = originY + y * cellSize;
+        const { px, py } = this.#cellPosition(x, y);
         const tile = new Graphics()
           .roundRect(px + 2, py + 2, cellSize - 4, cellSize - 4, Math.max(7, cellSize * 0.16))
           .fill({ color: (x + y) % 2 === 0 ? 0x16324f : 0x183854, alpha: 0.9 });
@@ -69,6 +75,16 @@ export class WorldView extends Container {
       if (event.type === 'spawn') this.#pop(event.x, event.y);
       if (event.type === 'pulse') this.#pulse(event.x, event.y);
     }
+  }
+
+  #cellPosition(x, y) {
+    const { cellSize, originX, originY, transpose } = this.layout;
+    const visualX = transpose ? y : x;
+    const visualY = transpose ? x : y;
+    return {
+      px: originX + visualX * cellSize,
+      py: originY + visualY * cellSize,
+    };
   }
 
   #drawEntity(entity, px, py, cellSize) {
@@ -93,11 +109,9 @@ export class WorldView extends Container {
   }
 
   #worldPoint(x, y) {
-    const { cellSize, originX, originY } = this.layout;
-    return {
-      x: originX + x * cellSize + cellSize / 2,
-      y: originY + y * cellSize + cellSize / 2,
-    };
+    const { cellSize } = this.layout;
+    const { px, py } = this.#cellPosition(x, y);
+    return { x: px + cellSize / 2, y: py + cellSize / 2 };
   }
 
   #pop(x, y) {
