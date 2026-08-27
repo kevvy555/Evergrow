@@ -2,10 +2,13 @@ import { Application } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pix
 import { GAME_CONFIG } from './config.js';
 import { WorldState } from '../model/WorldState.js';
 import { ClusterFinder } from '../systems/ClusterFinder.js';
+import { PerkSystem } from '../systems/PerkSystem.js';
 import { MergeSystem } from '../systems/MergeSystem.js';
 import { GrowthSystem } from '../systems/GrowthSystem.js';
 import { FlowSystem } from '../systems/FlowSystem.js';
+import { BloomSystem } from '../systems/BloomSystem.js';
 import { SparkSystem } from '../systems/SparkSystem.js';
+import { EvolutionSystem } from '../systems/EvolutionSystem.js';
 import { GoalSystem } from '../systems/GoalSystem.js';
 import { HintSystem } from '../systems/HintSystem.js';
 import { TurnSystem } from '../systems/TurnSystem.js';
@@ -14,90 +17,50 @@ import { SaveService } from '../services/SaveService.js';
 import { FeedbackService } from '../services/FeedbackService.js';
 import { WorldView } from '../view/WorldView.js';
 import { HudView } from '../view/HudView.js';
+import { EvolutionChoiceView } from '../view/EvolutionChoiceView.js';
+import { JournalView } from '../view/JournalView.js';
 
 export class GameApp {
-  constructor(host) {
-    this.host = host;
-    this.pixi = new Application();
-    this.saveService = new SaveService();
-    this.feedbackService = new FeedbackService();
-    this.world = null;
-    this.worldView = null;
-    this.hud = null;
-    this.autosaveHandle = null;
-  }
-
+  constructor(host) { this.host = host; this.pixi = new Application(); this.saveService = new SaveService(); this.feedbackService = new FeedbackService(); this.world = null; this.autosaveHandle = null; }
   async start() {
-    await this.pixi.init({
-      resizeTo: this.host,
-      antialias: true,
-      autoDensity: true,
-      resolution: Math.min(devicePixelRatio || 1, 2),
-      backgroundAlpha: 0,
-    });
+    await this.pixi.init({ resizeTo: this.host, antialias: true, autoDensity: true, resolution: Math.min(devicePixelRatio || 1, 2), backgroundAlpha: 0 });
     this.host.appendChild(this.pixi.canvas);
     this.#buildWorld(this.saveService.load());
     this.pixi.renderer.on('resize', () => this.#layout());
     this.#layout();
-    this.autosaveHandle = window.setInterval(
-      () => this.saveService.save(this.world),
-      GAME_CONFIG.autosaveMs,
-    );
+    this.autosaveHandle = window.setInterval(() => this.saveService.save(this.world), GAME_CONFIG.autosaveMs);
   }
-
   #buildWorld(snapshot) {
     this.pixi.stage.removeChildren().forEach((child) => child.destroy({ children: true }));
     this.world = new WorldState(snapshot);
-
-    const clusterFinder = new ClusterFinder(this.world);
-    const mergeSystem = new MergeSystem(this.world, clusterFinder);
-    const growthSystem = new GrowthSystem(this.world, mergeSystem);
-    const flowSystem = new FlowSystem(this.world);
-    const sparkSystem = new SparkSystem(this.world, mergeSystem);
-    const goalSystem = new GoalSystem(this.world);
-    const hintSystem = new HintSystem(this.world, clusterFinder);
-    const progressionSystem = new ProgressionSystem(this.world);
-    const turnSystem = new TurnSystem(
-      this.world,
-      growthSystem,
-      sparkSystem,
-      flowSystem,
-      goalSystem,
-    );
-
-    this.worldView = new WorldView(this.world, hintSystem, (x, y) => {
-      const events = turnSystem.tap(x, y);
-      this.worldView.play(events);
-      this.hud.render();
-      this.feedbackService.handle(events);
-      this.saveService.save(this.world);
+    const clusters = new ClusterFinder(this.world);
+    const perks = new PerkSystem(this.world);
+    const merge = new MergeSystem(this.world, clusters, perks);
+    const growth = new GrowthSystem(this.world, merge);
+    const flow = new FlowSystem(this.world, perks);
+    const bloom = new BloomSystem(this.world, perks);
+    const spark = new SparkSystem(this.world, merge, perks);
+    const evolution = new EvolutionSystem(this.world);
+    const goals = new GoalSystem(this.world);
+    const hints = new HintSystem(this.world, clusters);
+    const progression = new ProgressionSystem(this.world);
+    const turns = new TurnSystem(this.world, growth, spark, flow, bloom, evolution, goals);
+    this.evolutionSystem = evolution;
+    this.worldView = new WorldView(this.world, hints, (x, y) => this.#takeTurn(turns, x, y));
+    this.worldView.on('effect', (tick) => { this.pixi.ticker.add(tick); this.worldView.removeTicker = (fn) => this.pixi.ticker.remove(fn); });
+    this.journalView = new JournalView(this.world, () => this.journalView.hide());
+    this.choiceView = new EvolutionChoiceView((optionId) => this.#chooseEvolution(optionId));
+    this.hud = new HudView(this.world, progression, goals, {
+      reset: () => this.#reset(),
+      toggleFeedback: () => this.feedbackService.toggle(),
+      feedbackEnabled: () => this.feedbackService.enabled,
+      openJournal: () => this.journalView.toggle(),
     });
-    this.worldView.on('effect', (tick) => {
-      this.pixi.ticker.add(tick);
-      this.worldView.removeTicker = (fn) => this.pixi.ticker.remove(fn);
-    });
-
-    this.hud = new HudView(
-      this.world,
-      progressionSystem,
-      goalSystem,
-      () => this.#reset(),
-      () => this.feedbackService.toggle(),
-      () => this.feedbackService.enabled,
-    );
-    this.pixi.stage.addChild(this.worldView, this.hud);
+    this.pixi.stage.addChild(this.worldView, this.hud, this.journalView, this.choiceView);
   }
-
-  #reset() {
-    if (!window.confirm('Start a completely new world?')) return;
-    this.saveService.clear();
-    this.#buildWorld(null);
-    this.#layout();
-  }
-
-  #layout() {
-    const { width, height } = this.pixi.renderer.screen;
-    const hudHeight = this.hud.resize(width, height);
-    this.worldView.resize(width, height, hudHeight);
-  }
+  #takeTurn(turns, x, y) { const events = turns.tap(x, y); this.worldView.play(events); this.hud.render(); this.journalView.refresh(); this.feedbackService.handle(events); this.#syncChoice(); this.saveService.save(this.world); }
+  #chooseEvolution(optionId) { const events = this.evolutionSystem.choose(optionId); this.choiceView.hide(); this.worldView.play(events); this.hud.render(); this.journalView.refresh(); this.feedbackService.handle(events); this.saveService.save(this.world); }
+  #syncChoice() { const choice = this.evolutionSystem.getPendingChoice(); if (choice) this.choiceView.show(choice); }
+  #reset() { if (!window.confirm('Start a completely new world?')) return; this.saveService.clear(); this.#buildWorld(null); this.#layout(); }
+  #layout() { const { width, height } = this.pixi.renderer.screen; const hudHeight = this.hud.resize(width, height); this.worldView.resize(width, height, hudHeight); this.journalView.resize(width, height); this.choiceView.resize(width, height); this.#syncChoice(); }
 }

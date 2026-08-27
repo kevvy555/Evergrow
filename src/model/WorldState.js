@@ -16,47 +16,32 @@ export class WorldState {
     this.activeSpark = null;
     this.nextSparkAt = GAME_CONFIG.spark.firstAt;
     this.sparksCollected = 0;
+    this.bloomEnergy = 0;
+    this.bloomTurns = 0;
+    this.bloomsTriggered = 0;
+    this.perfectMerges = 0;
+    this.perks = [];
+    this.pendingEvolutionChoiceId = null;
+    this.evolutionChoicesCompleted = [];
     this.createdAt = Date.now();
-
     if (snapshot) this.load(snapshot);
   }
 
-  getCell(x, y) {
-    return this.cells.get(cellKey(x, y)) ?? null;
-  }
-
-  setCell(x, y, entity) {
-    this.cells.set(cellKey(x, y), { ...entity, x, y });
-  }
-
-  clearCell(x, y) {
-    this.cells.delete(cellKey(x, y));
-  }
-
-  incrementTaps() {
-    this.taps += 1;
-  }
-
-  addScore(points) {
-    this.score += points;
-  }
-
-  recordChain(chain) {
-    this.bestChain = Math.max(this.bestChain, chain);
-  }
-
-  setFlow(flow) {
-    this.flow = flow;
-    this.bestFlow = Math.max(this.bestFlow, flow);
-  }
-
-  discover(level) {
-    this.discoveredLevel = Math.max(this.discoveredLevel, level);
-  }
+  getCell(x, y) { return this.cells.get(cellKey(x, y)) ?? null; }
+  setCell(x, y, entity) { this.cells.set(cellKey(x, y), { ...entity, x, y }); }
+  clearCell(x, y) { this.cells.delete(cellKey(x, y)); }
+  incrementTaps() { this.taps += 1; }
+  addScore(points) { this.score += points; }
+  recordChain(chain) { this.bestChain = Math.max(this.bestChain, chain); }
+  setFlow(flow) { this.flow = flow; this.bestFlow = Math.max(this.bestFlow, flow); }
+  discover(level) { this.discoveredLevel = Math.max(this.discoveredLevel, level); }
+  recordPerfectMerge() { this.perfectMerges += 1; }
+  hasPerk(id) { return this.perks.includes(id); }
+  addPerk(id) { if (!this.hasPerk(id)) this.perks.push(id); }
 
   toJSON() {
     return {
-      version: 2,
+      version: 3,
       columns: this.columns,
       rows: this.rows,
       cells: [...this.cells.values()],
@@ -70,6 +55,13 @@ export class WorldState {
       activeSpark: this.activeSpark,
       nextSparkAt: this.nextSparkAt,
       sparksCollected: this.sparksCollected,
+      bloomEnergy: this.bloomEnergy,
+      bloomTurns: this.bloomTurns,
+      bloomsTriggered: this.bloomsTriggered,
+      perfectMerges: this.perfectMerges,
+      perks: this.perks,
+      pendingEvolutionChoiceId: this.pendingEvolutionChoiceId,
+      evolutionChoicesCompleted: this.evolutionChoicesCompleted,
       createdAt: this.createdAt,
     };
   }
@@ -85,6 +77,13 @@ export class WorldState {
     this.activeSpark = snapshot.activeSpark ?? null;
     this.nextSparkAt = snapshot.nextSparkAt ?? Math.max(GAME_CONFIG.spark.firstAt, this.taps + 3);
     this.sparksCollected = snapshot.sparksCollected ?? 0;
+    this.bloomEnergy = snapshot.bloomEnergy ?? 0;
+    this.bloomTurns = snapshot.bloomTurns ?? 0;
+    this.bloomsTriggered = snapshot.bloomsTriggered ?? 0;
+    this.perfectMerges = snapshot.perfectMerges ?? 0;
+    this.perks = [...(snapshot.perks ?? [])];
+    this.pendingEvolutionChoiceId = snapshot.pendingEvolutionChoiceId ?? null;
+    this.evolutionChoicesCompleted = [...(snapshot.evolutionChoicesCompleted ?? [])];
     this.createdAt = snapshot.createdAt ?? Date.now();
     this.cells.clear();
     for (const cell of snapshot.cells ?? []) {

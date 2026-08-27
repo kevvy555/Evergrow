@@ -1,12 +1,14 @@
 export const GAME_CONFIG = Object.freeze({
   title: 'Evergrow',
-  version: '0.2.0',
+  version: '0.3.0',
   grid: Object.freeze({ columns: 9, rows: 18 }),
   saveKey: 'evergrow.save.v1',
   mergeCount: 3,
   maxLevel: 6,
   autosaveMs: 1500,
   spark: Object.freeze({ firstAt: 9, interval: 12, score: 30, spawnLevel: 1 }),
+  bloom: Object.freeze({ threshold: 100, turns: 6, spawnLevel: 1, mergeBaseEnergy: 12, mergeLevelEnergy: 5, perfectEnergy: 18, sparkEnergy: 20 }),
+  perfect: Object.freeze({ minCluster: 4, baseBonus: 20, levelBonus: 12 }),
 });
 
 export const ENTITY_DEFINITIONS = Object.freeze([
