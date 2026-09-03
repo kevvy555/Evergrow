@@ -3,6 +3,7 @@ import { GAME_CONFIG } from './config.js';
 import { WorldState } from '../model/WorldState.js';
 import { ClusterFinder } from '../systems/ClusterFinder.js';
 import { PerkSystem } from '../systems/PerkSystem.js';
+import { FeatureGateSystem } from '../systems/FeatureGateSystem.js';
 import { MergeSystem } from '../systems/MergeSystem.js';
 import { WeatherSystem } from '../systems/WeatherSystem.js';
 import { GrowthSystem } from '../systems/GrowthSystem.js';
@@ -19,6 +20,8 @@ import { CelebrationSystem } from '../systems/CelebrationSystem.js';
 import { EvolutionSystem } from '../systems/EvolutionSystem.js';
 import { GoalSystem } from '../systems/GoalSystem.js';
 import { HintSystem } from '../systems/HintSystem.js';
+import { TapBoostSystem } from '../systems/TapBoostSystem.js';
+import { CoachSystem } from '../systems/CoachSystem.js';
 import { TurnSystem } from '../systems/TurnSystem.js';
 import { ProgressionSystem } from '../systems/ProgressionSystem.js';
 import { SaveService } from '../services/SaveService.js';
@@ -59,7 +62,8 @@ export class GameApp {
 
     const clusters = new ClusterFinder(this.world);
     const perks = new PerkSystem(this.world);
-    const merge = new MergeSystem(this.world, clusters, perks);
+    const features = new FeatureGateSystem(this.world);
+    const merge = new MergeSystem(this.world, clusters, perks, features);
     const weather = new WeatherSystem(this.world);
     const growth = new GrowthSystem(this.world, merge, weather);
     const flow = new FlowSystem(this.world, perks);
@@ -75,6 +79,8 @@ export class GameApp {
     const evolution = new EvolutionSystem(this.world);
     const goals = new GoalSystem(this.world);
     const hints = new HintSystem(this.world, clusters);
+    const tapBoost = new TapBoostSystem(this.world, features);
+    const coach = new CoachSystem(this.world, hints, features);
     const progression = new ProgressionSystem(this.world);
     const turns = new TurnSystem(this.world, {
       growthSystem: growth,
@@ -91,6 +97,8 @@ export class GameApp {
       bloomSystem: bloom,
       evolutionSystem: evolution,
       goalSystem: goals,
+      featureGateSystem: features,
+      tapBoostSystem: tapBoost,
     });
 
     this.evolutionSystem = evolution;
@@ -101,7 +109,7 @@ export class GameApp {
     });
     this.journalView = new JournalView(this.world, () => this.journalView.hide());
     this.choiceView = new EvolutionChoiceView((optionId) => this.#chooseEvolution(optionId));
-    this.hud = new HudView(this.world, progression, goals, wishes, weather, {
+    this.hud = new HudView(this.world, progression, goals, wishes, weather, coach, features, {
       reset: () => this.#reset(),
       toggleFeedback: () => this.feedbackService.toggle(),
       feedbackEnabled: () => this.feedbackService.enabled,
@@ -112,6 +120,7 @@ export class GameApp {
 
   #takeTurn(turns, x, y) {
     const events = turns.tap(x, y);
+    this.hud.play(events);
     this.worldView.play(events);
     this.hud.render();
     this.journalView.refresh();
@@ -123,6 +132,7 @@ export class GameApp {
   #chooseEvolution(optionId) {
     const events = this.evolutionSystem.choose(optionId);
     this.choiceView.hide();
+    this.hud.play(events);
     this.worldView.play(events);
     this.hud.render();
     this.journalView.refresh();

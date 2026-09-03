@@ -1,10 +1,11 @@
 import { GAME_CONFIG, ENTITY_DEFINITIONS } from '../core/config.js';
 
 export class MergeSystem {
-  constructor(world, clusterFinder, perkSystem) {
+  constructor(world, clusterFinder, perkSystem, featureGateSystem = null) {
     this.world = world;
     this.clusterFinder = clusterFinder;
     this.perkSystem = perkSystem;
+    this.featureGateSystem = featureGateSystem;
   }
 
   resolveFrom(originX, originY) {
@@ -15,6 +16,7 @@ export class MergeSystem {
     while (true) {
       const source = this.world.getCell(cursor.x, cursor.y);
       if (!source || source.level >= GAME_CONFIG.maxLevel) break;
+      const perfectUnlocked = !this.featureGateSystem || this.featureGateSystem.isUnlocked('perfect');
       const cluster = this.clusterFinder.findConnected(cursor.x, cursor.y, source.level);
       if (cluster.length < GAME_CONFIG.mergeCount) break;
 
@@ -40,21 +42,13 @@ export class MergeSystem {
       chain += 1;
 
       events.push({
-        type: 'merge',
-        x: cursor.x,
-        y: cursor.y,
-        fromLevel: source.level,
-        toLevel: nextLevel,
-        consumed,
-        chain,
-        clusterSize: cluster.length,
+        type: 'merge', x: cursor.x, y: cursor.y, fromLevel: source.level, toLevel: nextLevel,
+        consumed, chain, clusterSize: cluster.length,
       });
 
-      if (inheritsHarmony) {
-        events.push({ type: 'harmonyInherited', x: cursor.x, y: cursor.y, level: nextLevel });
-      }
+      if (inheritsHarmony) events.push({ type: 'harmonyInherited', x: cursor.x, y: cursor.y, level: nextLevel });
 
-      if (cluster.length >= GAME_CONFIG.perfect.minCluster) {
+      if (cluster.length >= GAME_CONFIG.perfect.minCluster && perfectUnlocked) {
         const bonus = Math.round(
           (GAME_CONFIG.perfect.baseBonus + GAME_CONFIG.perfect.levelBonus * nextLevel)
           * (cluster.length - GAME_CONFIG.mergeCount)
@@ -63,14 +57,8 @@ export class MergeSystem {
         this.world.addScore(bonus);
         this.world.recordPerfectMerge();
         events.push({
-          type: 'perfectMerge',
-          x: cursor.x,
-          y: cursor.y,
-          fromLevel: source.level,
-          toLevel: nextLevel,
-          clusterSize: cluster.length,
-          overflow,
-          bonus,
+          type: 'perfectMerge', x: cursor.x, y: cursor.y, fromLevel: source.level, toLevel: nextLevel,
+          clusterSize: cluster.length, overflow, bonus,
         });
       }
 
@@ -80,12 +68,7 @@ export class MergeSystem {
         this.world.addScore(bonus);
         this.world.radiantsConsumed += radiantCount;
         events.push({
-          type: 'radiantMerge',
-          x: cursor.x,
-          y: cursor.y,
-          level: nextLevel,
-          count: radiantCount,
-          bonus,
+          type: 'radiantMerge', x: cursor.x, y: cursor.y, level: nextLevel, count: radiantCount, bonus,
           bloomEnergy: GAME_CONFIG.bloom.radiantEnergy * radiantCount,
         });
       }

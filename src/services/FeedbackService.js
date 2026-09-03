@@ -15,6 +15,7 @@ export class FeedbackService {
     const perfect = events.find((event) => event.type === 'perfectMerge');
     const discovery = events.find((event) => event.type === 'discovery');
     const goal = events.find((event) => event.type === 'goalComplete');
+    const boost = events.find((event) => event.type === 'tapBoostUsed');
     const spark = events.find((event) => event.type === 'sparkCollected');
     const merges = events.filter((event) => event.type === 'merge');
 
@@ -29,6 +30,7 @@ export class FeedbackService {
     else if (perfect) { this.#tones([523, 659, 784], 0.06); this.#vibrate([12, 18, 30]); }
     else if (discovery) { this.#tones([392, 523, 659], 0.075); this.#vibrate([18, 30, 30]); }
     else if (goal) { this.#tones([440, 554, 659], 0.065); this.#vibrate([12, 22, 20]); }
+    else if (boost) { this.#tones([440, 659, 880], 0.055); this.#vibrate([10, 12, 22]); }
     else if (spark) { this.#tones([659, 784], 0.055); this.#vibrate(22); }
     else if (merges.length > 0) {
       const chain = Math.max(...merges.map((event) => event.chain));

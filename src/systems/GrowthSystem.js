@@ -1,5 +1,4 @@
 import { ENTITY_DEFINITIONS } from '../core/config.js';
-import { allNeighbours } from '../utils/grid.js';
 
 export class GrowthSystem {
   constructor(world, mergeSystem, weatherSystem = null) {
@@ -12,13 +11,11 @@ export class GrowthSystem {
     const events = [];
     const occupied = this.world.getCell(x, y);
     if (occupied) {
-      const emptyNeighbour = this.#nearestEmptyNeighbour(x, y);
-      if (!emptyNeighbour) {
-        events.push({ type: 'pulse', x, y, level: occupied.level });
-        return events;
-      }
-      x = emptyNeighbour.x;
-      y = emptyNeighbour.y;
+      events.push(
+        { type: 'pulse', x, y, level: occupied.level },
+        { type: 'blocked', x, y, reason: 'occupied' },
+      );
+      return events;
     }
 
     const adjustedLevel = this.weatherSystem?.adjustSpawnLevel(x, y, spawnLevel) ?? spawnLevel;
@@ -32,15 +29,11 @@ export class GrowthSystem {
     const wasNewDiscovery = level > this.world.discoveredLevel;
     this.world.setCell(x, y, { level });
     this.world.addScore(definition.score);
-    events.push({ type: 'spawn', x, y, level });
+    events.push({ type: 'spawn', source: 'tap', x, y, level });
     if (wasNewDiscovery) {
       this.world.discover(level);
       this.world.addScore(definition.discoveryBonus);
       events.push({ type: 'discovery', x, y, level, bonus: definition.discoveryBonus });
     }
-  }
-
-  #nearestEmptyNeighbour(x, y) {
-    return allNeighbours(x, y, this.world.columns, this.world.rows).find((cell) => !this.world.getCell(cell.x, cell.y)) ?? null;
   }
 }

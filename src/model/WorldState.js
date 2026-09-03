@@ -44,6 +44,8 @@ export class WorldState {
     this.harmonyDistricts = 0;
     this.settlementNameIndex = 0;
 
+    this.tapCharge = 0;
+    this.tapBoostsUsed = 0;
     this.createdAt = Date.now();
     if (snapshot) this.load(snapshot);
   }
@@ -64,7 +66,7 @@ export class WorldState {
 
   toJSON() {
     return {
-      version: 5,
+      version: 6,
       columns: this.columns,
       rows: this.rows,
       cells: [...this.cells.values()],
@@ -103,6 +105,8 @@ export class WorldState {
       festivalsTriggered: this.festivalsTriggered,
       harmonyDistricts: this.harmonyDistricts,
       settlementNameIndex: this.settlementNameIndex,
+      tapCharge: this.tapCharge,
+      tapBoostsUsed: this.tapBoostsUsed,
       createdAt: this.createdAt,
     };
   }
@@ -147,6 +151,8 @@ export class WorldState {
     this.harmonyDistricts = snapshot.harmonyDistricts ?? 0;
     this.settlementNameIndex = snapshot.settlementNameIndex ?? 0;
 
+    this.tapCharge = snapshot.tapCharge ?? 0;
+    this.tapBoostsUsed = snapshot.tapBoostsUsed ?? 0;
     this.createdAt = snapshot.createdAt ?? Date.now();
     this.cells.clear();
     for (const cell of snapshot.cells ?? []) {

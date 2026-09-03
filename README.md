@@ -2,36 +2,34 @@
 
 A phone-first PixiJS world-building merge game built around one interaction: **tap to grow**.
 
-Current version: **0.5.0**
+Current version: **0.6.0**
 
-## Core loop
+## Core rule
 
-Tap to create life. Connect three matching objects to evolve them:
+Tap an **empty** tile to place a Sprout exactly where you tapped.
 
-`Sprout → Tree → Grove → Village → Town → City → Starport`
+Three matching tiles that touch (sides or corners) automatically combine into the next level:
 
-The controls stay simple while the board gains depth through Perfect Merges, Flow, World Bloom, Life Sparks, evolution perks, Resonance cascades, Radiant entities, hidden Wonders and a living settlement layer.
+`3 🌱 → 🌳 → 3 🌳 → 🌲 → 3 🌲 → 🏠 → ...`
 
-## v0.5 living world
+v0.6 is a playtest-response release focused on making this rule immediately understandable before deeper systems appear.
 
-- Deterministic Rain, Golden Hour and Starlight weather moods.
-- Dawn/day/dusk/night presentation cycle.
-- Persistent settlement names that survive evolution.
-- Contextual settlement wishes generated from the current board.
-- Harmony districts created by growing nature beside settlements.
-- Community Joy and short Festivals after repeated fulfilled wishes.
-- Visible roads, traffic, citizens, weather and celebrations.
-- Existing v1-v4 saves remain loadable.
+## v0.6 clarity changes
+
+- Occupied taps no longer create a piece somewhere else.
+- A persistent coach explains the current 3-match recipe.
+- Connected pairs glow and the HUD explicitly shows **2/3**.
+- Advanced systems are progressively revealed instead of appearing during the first few taps.
+- After the first Tree, valid taps charge a deterministic **Tap Boost**; at 6/6 the next empty tap plants a Tree.
+- Perfect Merge is hidden until the basic Tree rule has been learned.
+- Existing living-world systems remain in the game and unlock later.
+- v1-v5 saves remain loadable.
 
 ## Run locally
-
-No build step or package install is required.
 
 ```bash
 python3 -m http.server 8080
 ```
-
-Open `http://localhost:8080`.
 
 ## Test
 
@@ -39,11 +37,4 @@ Open `http://localhost:8080`.
 npm test
 ```
 
-## Architecture
-
-Gameplay rules are plain JavaScript systems operating on serializable `WorldState`. PixiJS views consume state and gameplay events but do not own scoring, progression or simulation rules.
-
-See:
-- `docs/ARCHITECTURE.md`
-- `docs/ENGAGEMENT_DESIGN.md`
-- `docs/ROADMAP.md`
+See `docs/V06_PLAYTEST_RESPONSE.md` for the design reasoning behind this release.
